@@ -111,6 +111,8 @@
       ov.classList.remove("show");
       void ov.offsetWidth;
       ov.classList.add("show");
+      var hint = $("eggHint");
+      if (hint) hint.textContent = "彩蛋音效加载中…（点击任意处 / 按 Esc 关闭）";
       try {
         audio.currentTime = 0;
         var pr = audio.play();
@@ -145,6 +147,14 @@
       }
     });
 
+    audio.addEventListener("playing", function () {
+      var hint = $("eggHint");
+      if (hint) hint.textContent = "点击任意处 / 按 Esc 关闭";
+    });
+    audio.addEventListener("error", function () {
+      var hint = $("eggHint");
+      if (hint) hint.textContent = "音频加载失败（点击任意处 / 按 Esc 关闭）";
+    });
     ov.addEventListener("click", closeEgg);
     document.addEventListener("keydown", function (e) {
       if (e.key === "Escape" && !ov.hidden) closeEgg();
