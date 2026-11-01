@@ -216,13 +216,12 @@ button,input,select{font:inherit; color:inherit}
 }
 .egg[hidden]{display:none}
 .egg img{
-  width:min(78vw, 820px); max-height:76vh; object-fit:contain;
-  image-rendering:pixelated;
-  opacity:0; transform:scale(.82);
-  filter:drop-shadow(0 0 40px rgba(255,47,94,.55));
+  width:min(84vw, 960px); max-height:78vh; object-fit:contain;
+  opacity:0; transform:scale(.94);
+  background:transparent;
 }
-.egg.show img{ animation:eggPop .5s cubic-bezier(.2,1.6,.4,1) forwards; }
-@keyframes eggPop{ to{ opacity:1; transform:scale(1) rotate(0.001deg) } }
+.egg.show img{ animation:eggPop .45s ease-out forwards; }
+@keyframes eggPop{ to{ opacity:1; transform:scale(1) } }
 .egg-hint{ color:#9a90c9; font-size:11px; letter-spacing:.2em; margin:0 }
 
 .side-credit{
