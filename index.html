@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>DELTARUNE 素材馆 · 三角符文资源站</title>
+<meta name="description" content="三角符文 DELTARUNE 角色 / 地图 / 杂项 GIF 素材分类下载站">
+<link rel="stylesheet" href="assets/style.css">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'><rect width='16' height='16' fill='%230a0812'/><path d='M4 4h2v2H4zm6 0h2v2h-2zM3 6h10v2h-1v2h-1v1H9v1H7v-1H5v-1H4V8H3z' fill='%23ff2f5e'/></svg>">
+</head>
+<body>
+<div class="scanlines" aria-hidden="true"></div>
+
+<div class="intro" id="intro" hidden>
+  <video id="introVid" playsinline preload="auto"></video>
+  <div class="intro-ui">
+    <span class="intro-tip" id="introTip">DELTARUNE · 开场动画</span>
+    <button id="introSkip" class="btn accent" type="button">跳过，直接进站 ▶</button>
+  </div>
+</div>
+
+<header class="topbar">
+  <div class="brand">
+    <span class="soul" aria-hidden="true">♥</span>
+    <div class="brand-text">
+      <h1>DELTARUNE 素材馆</h1>
+      <p>三角符文 · 角色 / 地图 / 杂项 素材下载</p>
+    </div>
+  </div>
+  <div class="search-box">
+    <input id="q" type="search" placeholder="搜索素材名，例如 kris、chair、battlebg …" autocomplete="off" spellcheck="false">
+    <button id="globalBtn" class="btn tiny" title="在当前分类中搜索 / 切换为全库搜索">当前分类</button>
+  </div>
+  <div id="zhHint" class="zh-hint" hidden></div>
+  <button id="fsBtn" class="btn tiny" title="全屏浏览（F11 同效）">⛶ 全屏</button>
+  <div class="totals" id="totals">载入中…</div>
+</header>
+
+<div class="layout">
+  <aside class="sidebar">
+    <div class="side-title">分类</div>
+    <nav id="cats" class="cats"></nav>
+    <div class="side-foot">
+      <p>素材版权归 <b>Toby Fox</b> / DELTARUNE 所有，本站仅用于学习与二创参考。</p>
+      <p class="mono" id="genAt"></p>
+      <button id="replayIntro" class="btn tiny" type="button" style="margin-top:8px">▶ 重播开场动画</button>
+    </div>
+  </aside>
+
+  <main class="main" id="main">
+    <section class="hero" id="hero">
+      <div class="hero-main">
+        <div class="hero-head">
+          <h2 id="catName">—</h2>
+          <span class="tag" id="catEn"></span>
+        </div>
+        <p class="hero-desc" id="catDesc"></p>
+        <div class="hero-actions">
+          <span id="zipCatWrap" class="zip-wrap"><a id="zipBtn" class="btn accent" href="#" download>打包下载本分类 ZIP</a></span>
+          <a class="btn tiny" href="离线精选包.html" download title="单文件离线版：144 张精选素材，双击即用，可随意转发">离线精选包（14.8MB）</a>
+          <span class="mono dim" id="catMeta"></span>
+        </div>
+      </div>
+      <div class="hero-stats" id="heroStats">
+        <div class="stat"><b id="statCount">—</b><span id="statLabel">个 GIF</span></div>
+        <div class="stat"><b id="statSize">—</b><span>原始体积</span></div>
+        <div class="stat"><b id="statGroups">—</b><span>分组</span></div>
+      </div>
+    </section>
+
+    <section class="filters">
+      <div class="filter-row" id="subRow"></div>
+      <div class="filter-row small">
+        <label class="sel">分组
+          <select id="grp"></select>
+        </label>
+        <label class="sel">排序
+          <select id="sort">
+            <option value="name">名称 A→Z</option>
+            <option value="name-d">名称 Z→A</option>
+            <option value="size-d">体积 大→小</option>
+            <option value="size">体积 小→大</option>
+          </select>
+        </label>
+        <div class="seg" id="variant" role="group" aria-label="帧率版本">
+          <button data-v="1" class="on">133ms</button>
+          <button data-v="2">267ms</button>
+          <button data-v="0">全部</button>
+        </div>
+        <span id="zipFilterWrap" class="zip-wrap"><a id="zipFilterBtn" class="btn tiny accent" href="#" download title="把当前筛选结果打成一个 ZIP 下载">打包下载筛选结果</a></span>
+        <span class="count mono" id="count"></span>
+      </div>
+    </section>
+
+    <section class="grid" id="grid"></section>
+    <div class="more-wrap"><button id="more" class="btn" hidden>加载更多</button></div>
+  </main>
+</div>
+
+<div class="modal" id="modal" hidden>
+  <div class="modal-box" role="dialog" aria-modal="true">
+    <button class="modal-x" id="modalX" aria-label="关闭">✕</button>
+    <div class="modal-preview">
+      <img id="mImg" alt="">
+      <video id="mVid" hidden controls playsinline></video>
+    </div>
+    <div class="modal-side">
+      <h3 id="mName">—</h3>
+      <dl class="meta">
+        <div><dt>尺寸</dt><dd id="mDim">—</dd></div>
+        <div><dt>体积</dt><dd id="mSize">—</dd></div>
+        <div><dt>分类</dt><dd id="mCat">—</dd></div>
+        <div><dt>路径</dt><dd id="mPath" class="path">—</dd></div>
+      </dl>
+      <div class="modal-actions">
+        <a id="mDl" class="btn accent" download>下载 GIF</a>
+        <a id="mOpen" class="btn" target="_blank" rel="noopener">查看原图</a>
+        <button id="mCopy" class="btn">复制文件名</button>
+      </div>
+      <p class="hint mono">提示：按 Esc 关闭，← → 切换上一张 / 下一张</p>
+    </div>
+  </div>
+</div>
+
+<script src="assets/intro.js"></script>
+<script src="assets/zh-map.js"></script>
+<script src="assets/app.js"></script>
+</body>
+</html>
