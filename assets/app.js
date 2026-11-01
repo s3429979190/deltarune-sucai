@@ -185,25 +185,35 @@
     return (typeof v === "string") ? { u: v, s: 0 } : v;
   });
   var introSmallOnly = false;
+  var introLastU = "";
   var introLast = -1;
 
   function pickIntro() {
+    var slowConn = false;
+    try {
+      var c = navigator.connection || {};
+      if (c.saveData) slowConn = true;
+      if (/^(slow-)?2g$|^3g$/.test(String(c.effectiveType || ""))) slowConn = true;
+    } catch (e) {}
+    // GitHub Pages 或慢网：用专门压过的 640x360 webm（几十~几百 KB）
+    var useSmall = introSmallOnly || STATIC_HOST || slowConn;
+
     var pool = introPool;
-    var slow = introSmallOnly || (function () {
-      try {
-        var c = navigator.connection || {};
-        if (c.saveData) return true;
-        if (/^(slow-)?2g$|^3g$/.test(String(c.effectiveType || ""))) return true;
-      } catch (e) {}
-      return false;
-    })();
-    if (slow) {
-      var small = introPool.filter(function (v) { return v.s > 0 && v.s < 900 * 1024; });
-      if (small.length) pool = small;
+    if (useSmall) {
+      var smallPool = introPool.filter(function (v) { return v.sm; }).map(function (v) {
+        return { u: v.sm, s: v.sms || v.s };
+      });
+      if (smallPool.length) pool = smallPool;
+    } else {
+      var normal = introPool.filter(function (v) { return !v.sm || v.s > 0; });
+      if (normal.length) pool = normal;
+      else pool = introPool.map(function (v) { return { u: v.u, s: v.s }; });
     }
+
     var idx = Math.floor(Math.random() * pool.length);
-    if (pool.length > 1 && introLast >= 0 && pool[idx] === pool[introLast]) idx = (idx + 1) % pool.length;
+    if (pool.length > 1 && introLast >= 0 && pool[idx].u === introLastU) idx = (idx + 1) % pool.length;
     introLast = idx;
+    introLastU = pool[idx].u;
     var tip = $("introTip");
     if (tip) tip.textContent = "DELTARUNE · 开场动画 " + (idx + 1) + "/" + pool.length;
     return pool[idx].u;
