@@ -206,6 +206,25 @@ button,input,select{font:inherit; color:inherit}
   color:#ffe9f8; background:rgba(58,20,64,.9); border:1px solid var(--pink);
 }
 .modal-preview video{max-width:100%; max-height:62vh; background:#000}
+#tobyFox{ color:#ffd9ea; text-decoration:underline dotted; text-underline-offset:3px; user-select:none }
+#tobyFox:hover{ color:var(--pink) }
+
+.egg{
+  position:fixed; inset:0; z-index:2200; background:#000;
+  display:flex; flex-direction:column; align-items:center; justify-content:center; gap:18px;
+  cursor:pointer;
+}
+.egg[hidden]{display:none}
+.egg img{
+  width:min(78vw, 820px); max-height:76vh; object-fit:contain;
+  image-rendering:pixelated;
+  opacity:0; transform:scale(.82);
+  filter:drop-shadow(0 0 40px rgba(255,47,94,.55));
+}
+.egg.show img{ animation:eggPop .5s cubic-bezier(.2,1.6,.4,1) forwards; }
+@keyframes eggPop{ to{ opacity:1; transform:scale(1) rotate(0.001deg) } }
+.egg-hint{ color:#9a90c9; font-size:11px; letter-spacing:.2em; margin:0 }
+
 .side-credit{
   display:flex; align-items:center; gap:6px; flex-wrap:wrap; margin-top:8px;
 }

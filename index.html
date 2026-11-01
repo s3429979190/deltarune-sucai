@@ -41,7 +41,7 @@
     <div class="side-title">分类</div>
     <nav id="cats" class="cats"></nav>
     <div class="side-foot">
-      <p>素材版权归 <b>Toby Fox</b> / DELTARUNE 所有，本站仅用于学习与二创参考。</p>
+      <p>素材版权归 <b id="tobyFox" title="……试试多点几下？">Toby Fox</b> / DELTARUNE 所有，本站仅用于学习与二创参考。</p>
       <p class="mono" id="genAt"></p>
       <button id="replayIntro" class="btn tiny" type="button" style="margin-top:8px">▶ 重播开场动画</button>
       <div class="side-credit">
@@ -126,6 +126,12 @@
     </div>
   </div>
 </div>
+
+<div class="egg" id="egg" hidden>
+  <img id="eggImg" src="assets/egg.jpg" alt="彩蛋">
+  <p class="egg-hint">点击任意处 / 按 Esc 关闭</p>
+</div>
+<audio id="eggAudio" src="assets/egg.m4a" preload="none"></audio>
 
 <footer class="site-foot">
   <div class="credits">

@@ -96,6 +96,61 @@
     });
   }
 
+  // ── 彩蛋：连点侧栏「Toby Fox」5 次 ──
+  function initEgg() {
+    var fox = $("tobyFox"), ov = $("egg"), audio = $("eggAudio");
+    if (!fox || !ov) return;
+    var hits = 0, resetTimer = null;
+    fox.style.display = "inline-block";
+    fox.style.cursor = "pointer";
+    fox.style.transition = "transform .16s ease-out, color .16s";
+
+    function openEgg() {
+      ov.hidden = false;
+      document.body.style.overflow = "hidden";
+      ov.classList.remove("show");
+      void ov.offsetWidth;
+      ov.classList.add("show");
+      try {
+        audio.currentTime = 0;
+        var pr = audio.play();
+        if (pr && pr.catch) pr.catch(function () {});
+      } catch (e) {}
+    }
+    function closeEgg() {
+      ov.hidden = true;
+      ov.classList.remove("show");
+      document.body.style.overflow = "";
+      try { audio.pause(); } catch (e) {}
+    }
+
+    fox.addEventListener("click", function (e) {
+      e.stopPropagation();
+      hits++;
+      var scale = 1 + hits * 0.22;
+      fox.style.transform = "scale(" + scale + ")";
+      fox.style.color = hits >= 3 ? "#ff2f5e" : "";
+      clearTimeout(resetTimer);
+      resetTimer = setTimeout(function () {
+        hits = 0;
+        fox.style.transform = "";
+        fox.style.color = "";
+      }, 2500);
+      if (hits >= 5) {
+        hits = 0;
+        clearTimeout(resetTimer);
+        fox.style.transform = "";
+        fox.style.color = "";
+        openEgg();
+      }
+    });
+
+    ov.addEventListener("click", closeEgg);
+    document.addEventListener("keydown", function (e) {
+      if (e.key === "Escape" && !ov.hidden) closeEgg();
+    });
+  }
+
   function introHide() {
     var wrap = $("intro");
     if (!wrap || wrap.hidden) return;
@@ -193,6 +248,7 @@
 
   function boot() {
     startIntro();
+    initEgg();
     loadManifest("manifest/index.js", "__DR_INDEX").then(function (idx) {
       state.index = idx;
       $("totals").textContent = idx.categories.length + " 个分类 · "
