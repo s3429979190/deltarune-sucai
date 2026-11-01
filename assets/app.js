@@ -4,7 +4,7 @@
   var state = {
     index: null, cat: null, raw: [], view: [], shown: 0,
     sub: "all", grp: "all", variant: "1", q: "", sort: "name",
-    global: false, cache: {}, cur: -1
+    global: false, cache: {}, cur: -1, started: false
   };
 
   function $(id) { return document.getElementById(id); }
@@ -163,36 +163,64 @@
 
   function introHide() {
     var wrap = $("intro");
-    if (!wrap || wrap.hidden) return;
+    if (!wrap || wrap.hidden) { introDone(); return; }
     try { $("introVid").pause(); } catch (e) {}
     wrap.classList.add("fade");
-    setTimeout(function () { wrap.hidden = true; wrap.classList.remove("fade"); document.body.style.overflow = ""; }, 380);
+    setTimeout(function () {
+      wrap.hidden = true;
+      wrap.classList.remove("fade");
+      document.body.style.overflow = "";
+      introDone();
+    }, 380);
   }
 
   function introSkip() {
     try { sessionStorage.setItem("dr_intro_skipped", "1"); } catch (e) {}
     introHide();
+    setTimeout(introDone, 500);
   }
 
-  var introPool = (window.DR_INTRO && window.DR_INTRO.length) ? window.DR_INTRO.slice() : ["videos/intro-04.mp4"];
+  // 开场池兼容两种格式：["path"] 或 [{u:path, s:size}]
+  var introPool = (window.DR_INTRO && window.DR_INTRO.length ? window.DR_INTRO : ["videos/intro-04.mp4"]).map(function (v) {
+    return (typeof v === "string") ? { u: v, s: 0 } : v;
+  });
+  var introSmallOnly = false;
   var introLast = -1;
 
   function pickIntro() {
-    if (introPool.length === 1) return introPool[0];
-    var idx;
-    do { idx = Math.floor(Math.random() * introPool.length); } while (idx === introLast && introPool.length > 1);
+    var pool = introPool;
+    var slow = introSmallOnly || (function () {
+      try {
+        var c = navigator.connection || {};
+        if (c.saveData) return true;
+        if (/^(slow-)?2g$|^3g$/.test(String(c.effectiveType || ""))) return true;
+      } catch (e) {}
+      return false;
+    })();
+    if (slow) {
+      var small = introPool.filter(function (v) { return v.s > 0 && v.s < 900 * 1024; });
+      if (small.length) pool = small;
+    }
+    var idx = Math.floor(Math.random() * pool.length);
+    if (pool.length > 1 && introLast >= 0 && pool[idx] === pool[introLast]) idx = (idx + 1) % pool.length;
     introLast = idx;
     var tip = $("introTip");
-    if (tip) tip.textContent = "DELTARUNE · 开场动画 " + (idx + 1) + "/" + introPool.length;
-    return introPool[idx];
+    if (tip) tip.textContent = "DELTARUNE · 开场动画 " + (idx + 1) + "/" + pool.length;
+    return pool[idx].u;
   }
 
-  function startIntro() {
+  var introOnDone = null;
+  function introDone() {
+    if (introOnDone) { var cb = introOnDone; introOnDone = null; cb(); }
+  }
+
+  function startIntro(onDone) {
     var wrap = $("intro"), vid = $("introVid");
-    if (!wrap || !vid) return;
+    introOnDone = onDone || null;
+    if (!wrap || !vid) { introDone(); return; }
     var skipped = false;
     try { skipped = sessionStorage.getItem("dr_intro_skipped") === "1"; } catch (e) {}
-    if (skipped) { wrap.hidden = true; return; }
+    if (skipped) { wrap.hidden = true; introDone(); return; }
 
     var play = function (muted) {
       vid.muted = muted;
@@ -242,6 +270,7 @@
 
     var watchdog = setTimeout(function () {
       if (vid.paused || vid.readyState < 2) introSkip();
+      else introDone();
     }, 12000);
     vid.addEventListener("playing", function () { clearTimeout(watchdog); });
     begin();
@@ -257,8 +286,13 @@
   }
 
   function boot() {
-    startIntro();
     initEgg();
+    startIntro(startSite);
+  }
+
+  function startSite() {
+    if (state.started) return;
+    state.started = true;
     loadManifest("manifest/index.js", "__DR_INDEX").then(function (idx) {
       state.index = idx;
       $("totals").textContent = idx.categories.length + " 个分类 · "

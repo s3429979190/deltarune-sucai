@@ -1,1 +1,1 @@
-window.DR_INTRO=["videos/intro-01.mp4","videos/intro-02.mp4","videos/intro-03.mp4","videos/intro-04.mp4","videos/intro-05.mp4"];
+window.DR_INTRO=[{"u":"videos/intro-01.mp4","s":171647},{"u":"videos/intro-02.mp4","s":618666},{"u":"videos/intro-03.mp4","s":584200},{"u":"videos/intro-04.mp4","s":2033111},{"u":"videos/intro-05.mp4","s":540215}];
