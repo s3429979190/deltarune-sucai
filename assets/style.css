@@ -206,6 +206,20 @@ button,input,select{font:inherit; color:inherit}
   color:#ffe9f8; background:rgba(58,20,64,.9); border:1px solid var(--pink);
 }
 .modal-preview video{max-width:100%; max-height:62vh; background:#000}
+.side-credit{
+  display:flex; align-items:center; gap:6px; flex-wrap:wrap; margin-top:8px;
+}
+.side-credit-name{
+  font-size:12px; color:#ffe9f8; text-decoration:none; padding:3px 9px;
+  background:#3a1440; border:2px solid var(--pink); box-shadow:2px 2px 0 var(--shadow);
+}
+.side-credit-name:hover{background:#522a63; border-color:var(--cyan)}
+.side-credit-link{
+  font-size:10px; color:#cdc4ee; text-decoration:none; padding:3px 7px;
+  border:2px solid var(--line2); background:var(--panel);
+}
+.side-credit-link:hover{color:#fff; border-color:var(--pink)}
+
 .site-foot{
   margin:0 20px 28px; padding:18px 20px;
   border:3px solid var(--line); background:rgba(18,13,34,.75);
