@@ -174,10 +174,10 @@ button,input,select{font:inherit; color:inherit}
   position:absolute; top:4px; right:4px; width:26px; height:26px;
   display:flex; align-items:center; justify-content:center;
   background:#3a1440; border:2px solid var(--pink); color:#ffe9f8;
-  text-decoration:none; font-size:13px; opacity:0; pointer-events:none;
+  text-decoration:none; font-size:13px; opacity:.6; pointer-events:auto;
   box-shadow:2px 2px 0 var(--shadow); transition:opacity .1s;
 }
-.card:hover .dl, .card:focus-within .dl{opacity:1; pointer-events:auto}
+.card:hover .dl, .card:focus-within .dl{opacity:1}
 .card .dl:hover{background:#522a63; border-color:var(--cyan)}
 .zip-wrap{display:inline-flex; gap:6px; flex-wrap:wrap; align-items:center}
 .zip-wrap .part{padding:6px 9px; font-size:11px}
