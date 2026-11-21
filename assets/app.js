@@ -947,7 +947,10 @@
       vdl.setAttribute("download", it.n);
       vdl.textContent = "⬇";
       vdl.title = "下载原片";
-      vdl.addEventListener("click", function (e) { e.stopPropagation(); });
+      vdl.addEventListener("click", function (e) {
+        e.stopPropagation();
+        toast("开始下载：" + it.n);
+      });
       b.dataset.path = it.p;
       b.appendChild(thumb); b.appendChild(vmeta); b.appendChild(vdl);
       b.addEventListener("click", function () { openModal(indexOfPath(it.p)); });
@@ -991,7 +994,10 @@
     dl.setAttribute("download", it.n);
     dl.title = "直接下载这张 GIF";
     dl.textContent = "⬇";
-    dl.addEventListener("click", function (e) { e.stopPropagation(); });
+    dl.addEventListener("click", function (e) {
+      e.stopPropagation();
+      toast("开始下载：" + it.n);
+    });
     b.appendChild(thumb);
     b.appendChild(meta);
     b.appendChild(dl);
@@ -1034,6 +1040,7 @@
       + (it.grp ? " / " + it.grp : "");
     $("mPath").textContent = it.p;
     var dl = $("mDl");
+    dl.onclick = function () { toast("开始下载：" + baseName(it.p)); };
     dl.href = fileURL(it.p);
     dl.setAttribute("download", baseName(it.p));
     $("mOpen").href = fileURL(it.p);
