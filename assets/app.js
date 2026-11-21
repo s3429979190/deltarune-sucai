@@ -359,6 +359,33 @@
     el.textContent = "智能识别：" + translated.join(" ｜ ");
   }
 
+  function saveBlob(blob, filename) {
+    var a = document.createElement("a");
+    a.href = URL.createObjectURL(blob);
+    a.download = filename;
+    a.style.display = "none";
+    document.body.appendChild(a);
+    a.click();
+    setTimeout(function () { URL.revokeObjectURL(a.href); if (a.parentNode) a.parentNode.removeChild(a); }, 8000);
+  }
+
+  function downloadFile(url, filename) {
+    toast("正在准备：" + filename);
+    fetch(url, { cache: "force-cache" }).then(function (r) {
+      if (!r.ok) throw new Error("HTTP " + r.status);
+      return r.blob();
+    }).then(function (blob) {
+      saveBlob(blob, filename);
+      toast("已保存：" + filename + "（若没看到，请到浏览器的下载列表查看）");
+    }).catch(function (e) {
+      // 兜底：退回普通链接下载
+      var a = document.createElement("a");
+      a.href = url; a.download = filename;
+      document.body.appendChild(a); a.click(); a.remove();
+      toast("下载失败（" + e.message + "），已改用普通链接方式");
+    });
+  }
+
   function toast(text) {
     var t = document.createElement("div");
     t.className = "toast";
@@ -948,8 +975,9 @@
       vdl.textContent = "⬇";
       vdl.title = "下载原片";
       vdl.addEventListener("click", function (e) {
+        e.preventDefault();
         e.stopPropagation();
-        toast("开始下载：" + it.n);
+        downloadFile(fileURL(it.p), it.n);
       });
       b.dataset.path = it.p;
       b.appendChild(thumb); b.appendChild(vmeta); b.appendChild(vdl);
@@ -995,8 +1023,9 @@
     dl.title = "直接下载这张 GIF";
     dl.textContent = "⬇";
     dl.addEventListener("click", function (e) {
+      e.preventDefault();
       e.stopPropagation();
-      toast("开始下载：" + it.n);
+      downloadFile(fileURL(it.p), it.n);
     });
     b.appendChild(thumb);
     b.appendChild(meta);
@@ -1040,7 +1069,10 @@
       + (it.grp ? " / " + it.grp : "");
     $("mPath").textContent = it.p;
     var dl = $("mDl");
-    dl.onclick = function () { toast("开始下载：" + baseName(it.p)); };
+    dl.onclick = function (e) {
+      e.preventDefault();
+      downloadFile(fileURL(it.p), baseName(it.p));
+    };
     dl.href = fileURL(it.p);
     dl.setAttribute("download", baseName(it.p));
     $("mOpen").href = fileURL(it.p);
@@ -1133,15 +1165,18 @@
     document.addEventListener("fullscreenchange", function () {
       $("fsBtn").textContent = document.fullscreenElement ? "⛶ 退出全屏" : "⛶ 全屏";
     });
-    ["zipBtn", "zipFilterBtn"].forEach(function (id) {
-      var el = $(id);
-      if (!el) return;
-      el.addEventListener("click", function () {
-        if (el.classList.contains("off") || el.getAttribute("href") === "#") {
+    ["zipCatWrap", "zipFilterWrap"].forEach(function (wrapId) {
+      var wrap = $(wrapId);
+      if (!wrap) return;
+      wrap.addEventListener("click", function (e) {
+        var a = e.target.closest ? e.target.closest("a") : null;
+        if (!a) return;
+        if (a.classList.contains("off") || a.getAttribute("href") === "#") {
+          e.preventDefault();
           toast("当前没有可打包的内容，请先调整筛选");
           return;
         }
-        toast("已开始下载：" + el.textContent.replace(/^打包下载[^（]*（/, "").replace(/）$/, "") + "，请看浏览器下载栏");
+        toast("已开始下载：" + (a.getAttribute("download") || a.textContent).trim() + "，请看浏览器下载栏");
       });
     });
     $("modalX").addEventListener("click", closeModal);
